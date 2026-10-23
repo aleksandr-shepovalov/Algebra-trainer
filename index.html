@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Тренажёр ОГЭ · Алгебра 9 класс</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1d2433;--mut:#6b7488;--ac:#3f6df6;--ok:#1f9d55;--bad:#d64545;--bd:#dde2ee;--hi:#eef2ff}
+@media(prefers-color-scheme:dark){:root{--bg:#10131b;--card:#1a1f2b;--tx:#e8ecf5;--mut:#98a2b8;--ac:#6f93ff;--ok:#43c47c;--bad:#ff7a7a;--bd:#2c3446;--hi:#232b40}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:1.5rem;margin:6px 0}h2{font-size:1.15rem;margin:22px 0 10px}.m{color:var(--mut);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
+.tc{cursor:pointer;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px}
+.tc:active,.tc:hover{border-color:var(--ac)}.tc b{display:block}.tc small{color:var(--mut)}
+button{font:inherit;cursor:pointer;border-radius:12px;border:1px solid var(--bd);padding:11px 16px;color:var(--tx);background:var(--card)}
+.p{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:600}.g{background:transparent}
+.big{width:100%;text-align:left;padding:14px;margin-bottom:8px;font-weight:600}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--mut)}
+.bar{height:6px;background:var(--bd);border-radius:6px;overflow:hidden;margin-bottom:12px}.bar i{display:block;height:100%;background:var(--ac)}
+.tag{color:var(--mut);font-size:.85rem;margin-bottom:6px}.q{font-size:1.2rem;margin:4px 0 14px;line-height:1.6}
+.opt{display:block;width:100%;text-align:left;margin-bottom:8px;font-size:1.05rem}.opt.sel{border-color:var(--ac);background:var(--hi)}
+.opt.ok{border-color:var(--ok);background:rgba(31,157,85,.15)}.opt.no{border-color:var(--bad);background:rgba(214,69,69,.15)}
+input{width:100%;font:inherit;font-size:1.2rem;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+.row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}.row .p{flex:1}
+.hint{background:var(--hi);border-radius:10px;padding:10px 12px;margin-top:12px}
+.fb{margin-top:14px;padding:12px;border-radius:10px;border:1px solid var(--bd)}.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.rb{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.95rem}.rb span:first-child{width:46%}.rb .t{flex:1;height:12px;background:var(--bd);border-radius:8px;overflow:hidden}.rb .t i{display:block;height:100%}
+.big2{font-size:2.4rem;font-weight:700}.ch{display:flex;align-items:flex-end;gap:5px;height:110px;margin-top:8px}.ch div{flex:1;background:var(--ac);border-radius:4px 4px 0 0;min-height:3px;position:relative}
+.err{border-top:1px solid var(--bd);padding:10px 0}.err small{color:var(--mut)}
+</style></head><body><div id="app"></div>
+<script>
+const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pk=a=>a[ri(0,a.length-1)];
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=ri(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const F=n=>String(Math.round(n*1e6)/1e6).replace('.',',').replace('-','−');
+const sup=n=>String(n).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]).replace('-','⁻'),sub=n=>String(n).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
+const sg=n=>n<0?'− '+(-n):'+ '+n,cx=k=>k===1?'':k===-1?'−':F(k);
+const poly=(a,b,c)=>{let s=cx(a)+'x²';if(b)s+=(b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'x';if(c)s+=(c<0?' − ':' + ')+Math.abs(c);return s};
+const nz=(a,b)=>{let x;do{x=ri(a,b)}while(!x);return x};
+const T=[
+{id:'num',n:'Вычисления и проценты',i:'🔢',s:'Дроби, проценты, корни, стандартный вид · гл. I'},
+{id:'pow',n:'Степени и корни',i:'√',s:'Свойства степеней и корней'},
+{id:'expr',n:'Преобразование выражений',i:'✏️',s:'Формулы сокращённого умножения'},
+{id:'eq',n:'Уравнения',i:'⚖️',s:'Линейные и квадратные · гл. III'},
+{id:'ineq',n:'Неравенства',i:'↔️',s:'Линейные, квадратные, интервалы · гл. III'},
+{id:'func',n:'Функции и графики',i:'📈',s:'Парабола, прямая, нули функции'},
+{id:'sys',n:'Системы уравнений',i:'🧩',s:'Две переменные · гл. IV'},
+{id:'ap',n:'Арифметическая прогрессия',i:'➕',s:'aₙ, Sₙ, разность · гл. V'},
+{id:'gp',n:'Геометрическая прогрессия',i:'✖️',s:'bₙ, Sₙ, знаменатель · гл. V'},
+{id:'prob',n:'Вероятность и статистика',i:'🎲',s:'Вероятность, медиана, среднее'}];
+// Генераторы: {q,a,h,e} — числовой ответ; {q,o:[верный,...],h,e} — тест с выбором
+const G={
+num:[
+()=>{const b=pk([2,3,4,5,6,8]),a=ri(1,b-1),k=b*ri(2,6),c=ri(1,9),r=a*k/b;return{q:`Найдите значение выражения ${a}/${b} · ${k} − ${c}`,a:r-c,h:'Сначала умножение: разделите число на знаменатель дроби и умножьте на числитель.',e:`${k} : ${b} · ${a} = ${r}; ${r} − ${c} = ${r-c}`}},
+()=>{const B=ri(5,50)*20,p=pk([10,15,20,25,30,40,50]),N=B*(100+p)/100;return{q:`Товар стоил ${B} руб. Цену повысили на ${p}%. Сколько рублей он стал стоить?`,a:N,h:`${p}% от цены — это ${p}/100 · ${B}. Прибавьте к старой цене.`,e:`${B} · ${p}/100 = ${B*p/100}; ${B} + ${B*p/100} = ${N}`}},
+()=>{const B=ri(4,30)*50,p=pk([20,25,40]),N=B*(100-p)/100;return{q:`Куртку продали за ${N} руб. со скидкой ${p}%. Сколько рублей она стоила без скидки?`,a:B,h:`Цена со скидкой — это ${100-p}% от первоначальной. Найдите число по его проценту.`,e:`${N} : ${100-p} · 100 = ${B}`}},
+()=>{let n;do{n=ri(5,90)}while(Number.isInteger(Math.sqrt(n)));const m=Math.floor(Math.sqrt(n));return{q:`Между какими целыми числами находится число √${n}?`,o:[`${m} и ${m+1}`,`${m-1} и ${m}`,`${m+1} и ${m+2}`,`${m+2} и ${m+3}`],h:'Найдите ближайшие точные квадраты слева и справа от числа.',e:`${m}² = ${m*m} < ${n} < ${(m+1)**2} = ${m+1}², значит ${m} < √${n} < ${m+1}`}},
+()=>{let d;do{d=ri(11,99)}while(d%10===0);d/=10;const k=ri(2,6),v=(d/10**k).toFixed(k+1).replace('.',',');return{q:`Запишите число ${v} в стандартном виде a·10ⁿ, где 1 ≤ a < 10`,o:[`${F(d)}·10${sup(-k)}`,`${F(d)}·10${sup(-k-1)}`,`${F(d)}·10${sup(-k+1)}`,`${F(d)}·10${sup(k)}`],h:'Сколько раз нужно сдвинуть запятую вправо, чтобы получить число от 1 до 10?',e:`Запятую сдвигаем на ${k} знаков вправо → ${F(d)}·10${sup(-k)}`}}],
+pow:[
+()=>{const s=pk([2,3,5,7,10]),m=ri(2,6);return{q:`Найдите значение выражения √${s} · √${s*m*m}`,a:s*m,h:'√a · √b = √(ab). Потом извлеките корень.',e:`√(${s}·${s*m*m}) = √${s*s*m*m} = ${s*m}`}},
+()=>{const a=pk([2,3,5]),p=ri(2,4),q=ri(2,4),r=ri(1,p+q-1);return{q:`Найдите значение выражения ${a}${sup(p)} · ${a}${sup(q)} : ${a}${sup(r)}`,a:a**(p+q-r),h:'При умножении степеней с одинаковым основанием показатели складываются, при делении — вычитаются.',e:`${a}^(${p}+${q}−${r}) = ${a}${sup(p+q-r)} = ${a**(p+q-r)}`}},
+()=>{const n=ri(10,40),k=ri(1,3);return{q:`Найдите значение выражения (√${n} − ${k})(√${n} + ${k})`,a:n-k*k,h:'Разность квадратов: (a − b)(a + b) = a² − b².',e:`${n} − ${k*k} = ${n-k*k}`}},
+()=>{const a=pk([2,5,10]),k=ri(2,a===2?4:3);return{q:`Найдите значение ${a}${sup(-k)}. Ответ запишите десятичной дробью.`,a:1/a**k,h:'a⁻ᵏ = 1 / aᵏ.',e:`${a}${sup(-k)} = 1/${a**k} = ${F(1/a**k)}`}}],
+expr:[
+()=>{const m=pk([30,40,50,60,70,80,90,100]),k=ri(1,5),a=m+k,b=m-k;return{q:`Вычислите удобным способом: ${a}² − ${b}²`,a:4*m*k,h:'Разность квадратов: a² − b² = (a − b)(a + b).',e:`(${a}−${b})(${a}+${b}) = ${2*k}·${2*m} = ${4*m*k}`}},
+()=>{const a=ri(2,6);return{q:`Упростите выражение (x + ${a})² − (x − ${a})²`,o:[`${4*a}x`,`${2*a}x`,`${2*a*a}`,`${4*a}x + ${2*a*a}`],h:'Раскройте оба квадрата по формулам (a ± b)² и приведите подобные.',e:`(x²+${2*a}x+${a*a}) − (x²−${2*a}x+${a*a}) = ${4*a}x`}},
+()=>{const a=ri(2,9),x=ri(5,30);return{q:`Найдите значение выражения (x + ${a})² − x(x + ${2*a}) при x = ${x}`,a:a*a,h:'Сначала упростите выражение — x может «исчезнуть».',e:`x²+${2*a}x+${a*a} − x² − ${2*a}x = ${a*a}`}},
+()=>{const k=ri(2,9);return{q:`Разложите на множители: x² − ${k*k}`,o:[`(x − ${k})(x + ${k})`,`(x − ${k})²`,`(x + ${k})²`,`x(x − ${k*k})`],h:`${k*k} = ${k}². Это разность квадратов.`,e:`x² − ${k}² = (x − ${k})(x + ${k})`}},
+()=>{const k=ri(2,9);let v;do{v=ri(1,20)}while(v===k);return{q:`Найдите значение выражения (x² − ${k*k}) / (x − ${k}) при x = ${v}`,a:v+k,h:'Разложите числитель по формуле разности квадратов и сократите дробь.',e:`(x−${k})(x+${k})/(x−${k}) = x + ${k} = ${v+k}`}}],
+eq:[
+()=>{const x0=ri(-9,9),a=ri(2,7),c=pk([-3,-2,-1,1]),b=ri(-9,9),d=a*x0+b-c*x0;return{q:`Решите уравнение ${cx(a)}x ${b?sg(b):''} = ${cx(c)}x ${d?sg(d):''}`,a:x0,h:'Перенесите слагаемые с x в левую часть, числа — в правую (знак меняется!).',e:`${a-c}x = ${d-b}, x = ${x0}`}},
+()=>{let r1=nz(-9,9),r2;do{r2=nz(-9,9)}while(r2===r1);const b=-(r1+r2),c=r1*r2;return{q:`Решите уравнение ${poly(1,b,c)} = 0. Если корней несколько, в ответ запишите больший.`,a:Math.max(r1,r2),h:'Теорема Виета: x₁ + x₂ = −b, x₁·x₂ = c. Или дискриминант D = b² − 4ac.',e:`D = ${b*b-4*c}, корни ${r1} и ${r2}. Больший: ${Math.max(r1,r2)}`}},
+()=>{const a=pk([1,2,3]),b=nz(-8,8),c=nz(-6,6);return{q:`Найдите дискриминант уравнения ${poly(a,b,c)} = 0`,a:b*b-4*a*c,h:'D = b² − 4ac. Аккуратно со знаками.',e:`D = (${b})² − 4·${a}·(${c}) = ${b*b-4*a*c}`}},
+()=>{let r1=nz(-8,8),r2=nz(-8,8);const b=-(r1+r2),c=r1*r2,s=Math.random()<.5;return{q:`Не решая уравнение ${poly(1,b,c)} = 0, найдите ${s?'сумму':'произведение'} его корней.`,a:s?r1+r2:c,h:'Теорема Виета для x² + bx + c = 0: сумма корней = −b, произведение = c.',e:s?`x₁ + x₂ = −b = ${-b}`:`x₁·x₂ = c = ${c}`}},
+()=>{const m=nz(-9,9);return{q:`Решите уравнение ${poly(1,-m,0)} = 0. В ответ запишите меньший корень.`,a:Math.min(0,m),h:'Вынесите x за скобки: x(x − m) = 0.',e:`x(x − ${F(m)}) = 0 → x = 0 или x = ${F(m)}`}}],
+ineq:[
+()=>{const a=pk([2,3,4,-2,-3,-4]),x0=nz(-6,6),b=ri(-8,8),c=a*x0+b,s=a>0?'>':'<',o=a>0?'<':'>';return{q:`Решите неравенство ${cx(a)}x ${b?sg(b):''} > ${F(c)}`,o:[`x ${s} ${F(x0)}`,`x ${o} ${F(x0)}`,`x ${s} ${F(-x0)}`,`x ${o} ${F(-x0)}`],h:'При делении обеих частей на отрицательное число знак неравенства меняется на противоположный.',e:`${cx(a)}x > ${F(a*x0)}; делим на ${a}${a<0?' (знак меняется!)':''}: x ${s} ${F(x0)}`}},
+()=>{let p,q;do{p=nz(-8,8);q=nz(-8,8)}while(q-p<2||p+q===0);const g=Math.random()<.5,A=`(${F(p)}; ${F(q)})`,B=`(−∞; ${F(p)}) ∪ (${F(q)}; +∞)`,C=`(${F(-q)}; ${F(-p)})`,D=`(−∞; ${F(-q)}) ∪ (${F(-p)}; +∞)`;return{q:`Решите неравенство (x ${sg(-p)})(x ${sg(-q)}) ${g?'>':'<'} 0`,o:g?[B,A,D,C]:[A,B,C,D],h:'Отметьте корни на числовой прямой, ветви параболы направлены вверх. Где парабола ниже оси — там «<», выше — там «>».',e:`Корни ${p} и ${q}. ${g?'Значения больше нуля вне корней':'Значения меньше нуля между корнями'}.`}},
+()=>{let p,q;do{p=nz(-6,6);q=nz(-6,6)}while(q-p<2);return{q:`Сколько целых решений имеет неравенство (x ${sg(-p)})(x ${sg(-q)}) ≤ 0 ?`,a:q-p+1,h:'Решение — отрезок [p; q] с включёнными концами. Посчитайте целые числа на нём.',e:`Решение: [${p}; ${q}], целых чисел ${q}−(${p})+1 = ${q-p+1}`}}],
+func:[
+()=>{const a=pk([1,2,-1]),h=nz(-5,5),b=-2*a*h,c=ri(-5,9);return{q:`Найдите абсциссу вершины параболы y = ${poly(a,b,c)}`,a:h,h:'Абсцисса вершины: x₀ = −b / (2a).',e:`x₀ = ${-b} / ${2*a} = ${h}`}},
+()=>{const h=ri(-5,5),c=ri(1,20);return{q:`Найдите наименьшее значение функции y = ${poly(1,-2*h,c)}`,a:c-h*h,h:'Выделите полный квадрат или найдите вершину параболы и подставьте её абсциссу.',e:`y = (x ${sg(-h)})² + ${c-h*h}, минимум = ${c-h*h}`}},
+()=>{const k=nz(-4,4),b=ri(-6,6),x1=ri(-4,0),x2=x1+ri(1,4);return{q:`Прямая y = kx + b проходит через точки (${F(x1)}; ${F(k*x1+b)}) и (${F(x2)}; ${F(k*x2+b)}). Найдите k.`,a:k,h:'k = (y₂ − y₁) / (x₂ − x₁).',e:`k = (${F(k*x2+b)} − (${F(k*x1+b)})) / (${x2} − (${x1})) = ${k}`}},
+()=>{const t=ri(0,2);let b,c;if(t===0){const r=nz(-5,5);b=-2*r;c=r*r}else if(t===1){let r1=nz(-6,6),r2;do{r2=nz(-6,6)}while(r2===r1);b=-(r1+r2);c=r1*r2}else{b=ri(-4,4);c=Math.floor(b*b/4)+ri(1,5)}const D=b*b-4*c;return{q:`Сколько нулей имеет функция y = ${poly(1,b,c)}?`,a:D>0?2:D===0?1:0,h:'Нули функции — корни уравнения. Посчитайте дискриминант.',e:`D = ${D}; ${D>0?'D > 0 — два нуля':D===0?'D = 0 — один нуль':'D < 0 — нулей нет'}`}}],
+sys:[
+()=>{const x=ri(-6,9),y=ri(-6,9),w=pk(['x','y','xy']);return{q:`Решите систему:<br>x + y = ${F(x+y)}<br>x − y = ${F(x-y)}<br>${w==='xy'?'Найдите значение x · y.':'Найдите '+w+'.'}`,a:w==='x'?x:w==='y'?y:x*y,h:'Сложите уравнения — y исчезнет. Затем найдите вторую переменную.',e:`2x = ${2*x} → x = ${x}; y = ${y}${w==='xy'?`; x·y = ${x*y}`:''}`}},
+()=>{let k,a,b,x0;do{k=pk([2,3,-1,-2]);a=ri(1,4);b=ri(1,3)}while(a+b*k===0);x0=ri(1,6)*pk([1,-1]);const c=a*x0+b*k*x0;return{q:`Решите систему и найдите x:<br>y = ${cx(k)}x<br>${cx(a)}x + ${cx(b)}y = ${F(c)}`,a:x0,h:'Подставьте y = kx во второе уравнение — получится уравнение с одной переменной.',e:`${cx(a)}x + ${b}·(${cx(k)}x) = ${F(c)} → ${a+b*k}x = ${F(c)} → x = ${x0}`}},
+()=>{const k=pk([-4,-1,0,1,4,9,16]);return{q:`Сколько решений имеет система<br>y = x²<br>y = ${F(k)}`,a:k>0?2:k===0?1:0,h:'Сколько раз прямая y = k пересекает параболу y = x²?',e:k>0?'k > 0 — две точки пересечения':k===0?'k = 0 — касание в вершине':'k < 0 — парабола лежит выше оси, пересечений нет'}}],
+ap:[
+()=>{const a=ri(-10,20),d=nz(-5,8),n=ri(8,30);return{q:`Арифметическая прогрессия (aₙ): ${F(a)}; ${F(a+d)}; ${F(a+2*d)}; … Найдите a${sub(n)}.`,a:a+(n-1)*d,h:'aₙ = a₁ + (n − 1)·d, где d — разность соседних членов.',e:`d = ${d}; a${sub(n)} = ${a} + ${n-1}·${F(d)} = ${a+(n-1)*d}`}},
+()=>{const a=ri(-8,15),d=nz(-4,6),n=ri(5,12);return{q:`Арифметическая прогрессия: a₁ = ${F(a)}, d = ${F(d)}. Найдите сумму первых ${n} её членов.`,a:n*(2*a+(n-1)*d)/2,h:'Sₙ = (2a₁ + (n − 1)d)·n / 2.',e:`S = (2·${F(a)} + ${n-1}·${F(d)})·${n}/2 = ${n*(2*a+(n-1)*d)/2}`}},
+()=>{const a=ri(-10,10),d=nz(-6,6),k=ri(2,6),r=ri(2,5),m=k+r;return{q:`В арифметической прогрессии a${sub(k)} = ${F(a+(k-1)*d)}, a${sub(m)} = ${F(a+(m-1)*d)}. Найдите разность прогрессии.`,a:d,h:`От a${sub(k)} до a${sub(m)} ровно ${r} шагов по d.`,e:`d = (${F(a+(m-1)*d)} − (${F(a+(k-1)*d)})) / ${r} = ${d}`}},
+()=>{const a=-ri(10,30),d=ri(2,5);return{q:`Арифметическая прогрессия: a₁ = ${F(a)}, d = ${d}. Сколько в ней отрицательных членов?`,a:Math.ceil(-a/d),h:'Решите неравенство a₁ + (n − 1)d < 0 относительно n.',e:`n − 1 < ${-a}/${d} → n < ${F(-a/d+1)}; наибольшее целое n = ${Math.ceil(-a/d)}`}}],
+gp:[
+()=>{const q=pk([2,3,-2,-3]),b=ri(1,5),n=ri(5,7);return{q:`Геометрическая прогрессия (bₙ): ${b}; ${F(b*q)}; ${F(b*q*q)}; … Найдите b${sub(n)}.`,a:b*q**(n-1),h:'bₙ = b₁ · qⁿ⁻¹, где q = b₂ / b₁.',e:`q = ${q}; b${sub(n)} = ${b}·(${q})${sup(n-1)} = ${b*q**(n-1)}`}},
+()=>{const q=pk([2,3,-2,-3,4,-4,5]),b=ri(1,4),k=ri(1,3);return{q:`В геометрической прогрессии b${sub(k)} = ${F(b*q**(k-1))}, b${sub(k+1)} = ${F(b*q**k)}. Найдите знаменатель прогрессии.`,a:q,h:'Знаменатель q = b₍ₖ₊₁₎ / bₖ.',e:`q = ${F(b*q**k)} / ${F(b*q**(k-1))} = ${q}`}},
+()=>{const q=pk([2,3]),b=ri(1,4),n=ri(4,6);return{q:`Геометрическая прогрессия: b₁ = ${b}, q = ${q}. Найдите сумму первых ${n} её членов.`,a:b*(q**n-1)/(q-1),h:'Sₙ = b₁(qⁿ − 1) / (q − 1).',e:`S = ${b}·(${q}${sup(n)} − 1)/${q-1} = ${b*(q**n-1)/(q-1)}`}},
+()=>{const b=ri(1,4),q=pk([2,3,-2]),d=ri(2,5),z=ri(1,3),L=a=>a.join('; ');return{q:'Какая из последовательностей является геометрической прогрессией?',o:[L([b,b*q,b*q*q,b*q**3].map(F)),L([b,b+d,b+2*d,b+3*d]),L([b,b*q,b*q*q,b*q**3+z].map(F)),'1; 4; 9; 16'],h:'В геометрической прогрессии каждый член получается из предыдущего умножением на одно и то же число.',e:'Проверьте отношения соседних членов — они должны быть одинаковыми.'}}],
+prob:[
+()=>{const N=pk([10,20,25,40,50]),k=ri(1,N-1);return{q:`В коробке ${N} шаров, из них ${k} красных. Наугад берут один шар. Найдите вероятность того, что он красный. (Ответ — десятичная дробь.)`,a:k/N,h:'Вероятность = число благоприятных исходов / число всех исходов.',e:`${k}/${N} = ${F(k/N)}`}},
+()=>{const a=Array.from({length:7},()=>ri(1,30)),s=a.slice().sort((x,y)=>x-y);return{q:`Найдите медиану ряда чисел: ${a.join('; ')}`,a:s[3],h:'Расположите числа по возрастанию. Медиана нечётного ряда — число посередине.',e:`По возрастанию: ${s.join('; ')}. Четвёртое число: ${s[3]}`}},
+()=>{let m=ri(5,20),a;do{a=Array.from({length:4},()=>ri(m-6,m+6));a.push(5*m-a.reduce((x,y)=>x+y,0))}while(a[4]<1);a=sh(a);return{q:`Найдите среднее арифметическое чисел: ${a.join('; ')}`,a:m,h:'Сложите все числа и разделите на их количество.',e:`(${a.join(' + ')}) / 5 = ${m}`}},
+()=>{const n=ri(3,6);let f=1;for(let i=2;i<=n;i++)f*=i;return{q:`Сколькими способами можно расставить на полке ${n} разных книг?`,a:f,h:'Число перестановок: n! = 1·2·…·n.',e:`${n}! = ${f}`}}]};
+const mk=id=>{const r=pk(G[id])();r.t=id;if(r.o){r.type='mc';r.opts=sh(r.o);r.ci=r.opts.indexOf(r.o[0])}else r.type='num';return r};
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const load=()=>{try{return JSON.parse(localStorage.getItem('oge_alg1'))||{t:{},h:[]}}catch(e){return{t:{},h:[]}}};
+let ST=load(),S=null;const save=()=>{try{localStorage.setItem('oge_alg1',JSON.stringify(ST))}catch(e){}};
+const acc=id=>{const t=ST.t[id];return t&&t.ok+t.bad?Math.round(t.ok/(t.ok+t.bad)*100):null};
+const col=p=>p===null?'var(--bd)':p>=75?'var(--ok)':p>=50?'#e0a030':'var(--bad)';
+function home(){S=null;let h=`<h1>Тренажёр ОГЭ · Алгебра</h1><p class="m">9 класс, по учебнику Макарычева. Числа и порядок заданий каждый раз новые — заучить не получится, нужно думать 🙂</p>
+<button class="big card" onclick="start('mix')">🎯 Случайный микс — 10 заданий из всех тем</button>
+<button class="big card" onclick="start('test')">📝 Пробный тест — 15 заданий, без подсказок, результат в конце</button>
+<button class="big card" onclick="start('weak')">🔁 Работа над ошибками — чаще попадаются слабые темы</button>
+<button class="big card" onclick="stats()">📊 Статистика и аналитика</button><h2>Тренировка по темам</h2><div class="grid">`;
+T.forEach(t=>{const a=acc(t.id);h+=`<button class="tc" onclick="start('topic','${t.id}')"><b>${t.i} ${t.n}</b><small>${t.s}</small><div class="rb" style="margin-top:8px"><span style="width:auto">${a===null?'ещё нет данных':a+'%'}</span><span class="t"><i style="width:${a||0}%;background:${col(a)}"></i></span></div></button>`});
+$('#app').innerHTML=h+'</div>'}
+function start(mode,id){const N=mode==='test'?15:10;let ids=[];
+if(mode==='topic')ids=Array(N).fill(id);
+else if(mode==='weak'){const w=T.map(t=>{const a=acc(t.id);return[t.id,a===null?.5:1.1-a/100]});const sum=w.reduce((s,x)=>s+x[1],0);for(let i=0;i<N;i++){let r=Math.random()*sum;for(const x of w){r-=x[1];if(r<=0){ids.push(x[0]);break}}}while(ids.length<N)ids.push(pk(T).id)}
+else{ids=sh(T.map(t=>t.id));while(ids.length<N)ids.push(pk(T).id);ids=sh(ids).slice(0,N)}
+const seen=new Set(),qs=[];for(const i of ids){let q,n=0;do{q=mk(i)}while(seen.has(q.q)&&++n<30);seen.add(q.q);qs.push(q)}
+S={mode,id,qs,i:0,res:[],locked:false,hu:false,sel:-1};qv()}
+function qv(){const q=S.qs[S.i],test=S.mode==='test',n=S.qs.length,tp=T.find(t=>t.id===q.t);S.hu=false;S.sel=-1;
+$('#app').innerHTML=`<div class="top"><button class="g" onclick="if(confirm('Выйти? Ответы уже сохранены в статистике.'))home()">← Меню</button><span>${S.i+1} / ${n}${test?' · тест':''}</span></div><div class="bar"><i style="width:${S.i/n*100}%"></i></div>
+<div class="card"><div class="tag">${tp.i} ${tp.n}</div><div class="q">${q.q}</div>
+${q.type==='mc'?q.opts.map((o,k)=>`<button class="opt" id="o${k}" onclick="pick(${k})">${esc(o)}</button>`).join(''):'<input id="ans" inputmode="decimal" autocomplete="off" placeholder="Ответ — число (можно через запятую)">'}
+<div id="hint" class="hint" hidden></div><div class="row">${test?'':'<button class="g" onclick="hint()">💡 Подсказка</button>'}<button class="p" id="chk" onclick="check()">${test?'Ответить':'Проверить'}</button></div><div id="fb"></div></div>`;
+const a=$('#ans');if(a){a.focus();a.onkeydown=e=>{if(e.key==='Enter')check()}}}
+function pick(k){if(S.locked)return;S.sel=k;document.querySelectorAll('.opt').forEach((b,i)=>b.classList.toggle('sel',i===k))}
+function hint(){if(S.locked)return;const h=$('#hint');h.hidden=false;h.innerHTML='💡 '+S.qs[S.i].h;S.hu=true}
+function check(){if(S.locked)return;const q=S.qs[S.i],test=S.mode==='test';let ok,user;
+if(q.type==='mc'){if(S.sel<0)return;ok=S.sel===q.ci;user=q.opts[S.sel]}
+else{const raw=$('#ans').value;if(!raw.trim())return;const x=parseFloat(raw.replace(/\s/g,'').replace(',','.').replace('−','-'));ok=isFinite(x)&&Math.abs(x-q.a)<1e-6;user=raw.trim()}
+const cor=q.type==='mc'?q.opts[q.ci]:F(q.a);S.res.push({q,ok,user,cor,hu:S.hu});
+const t=ST.t[q.t]||(ST.t[q.t]={ok:0,bad:0,h:0});ok?t.ok++:t.bad++;if(S.hu)t.h++;save();
+if(test){nextQ();return}
+S.locked=true;
+if(q.type==='mc')document.querySelectorAll('.opt').forEach((b,i)=>{if(i===q.ci)b.classList.add('ok');else if(i===S.sel)b.classList.add('no')});
+else $('#ans').disabled=true;
+$('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?'✅ Верно!'+(S.hu?' (с подсказкой)':''):'❌ Неверно. Правильный ответ: '+esc(cor)}</b><br><small>Решение: ${q.e}</small></div>`;
+const c=$('#chk');c.textContent=S.i+1>=S.qs.length?'Результат →':'Дальше →';c.onclick=nextQ}
+function nextQ(){S.locked=false;S.i++;S.i>=S.qs.length?finish():qv()}
+function finish(){const ok=S.res.filter(r=>r.ok).length,n=S.res.length;ST.h.push({ts:Date.now(),m:S.mode,ok,n});ST.h=ST.h.slice(-30);save();
+const p=Math.round(ok/n*100),errs=S.res.filter(r=>!r.ok),test=S.mode==='test';
+let h=`<div class="card" style="text-align:center"><div class="m">Результат</div><div class="big2" style="color:${col(p)}">${ok} из ${n} · ${p}%</div>${test?`<div class="m">Ориентировочная оценка: <b>${p>=85?5:p>=65?4:p>=40?3:2}</b></div>`:''}<div class="row"><button class="p" onclick="start('${S.mode}',${S.id?`'${S.id}'`:'null'})">Ещё раз (новые задания)</button><button onclick="home()">В меню</button></div></div>`;
+if(errs.length)h+='<h2>Разбор ошибок</h2><div class="card">'+errs.map(r=>`<div class="err"><div>${r.q.q}</div><small>Твой ответ: ${esc(r.user)} · Правильно: <b>${esc(r.cor)}</b><br>Решение: ${r.q.e}</small></div>`).join('')+'</div>';
+else h+='<p class="m" style="text-align:center">Без ошибок! 🎉</p>';
+$('#app').innerHTML=h}
+function stats(){let ok=0,bad=0,hh=0;Object.values(ST.t).forEach(t=>{ok+=t.ok;bad+=t.bad;hh+=t.h});const n=ok+bad,p=n?Math.round(ok/n*100):0;
+let h=`<div class="top"><button class="g" onclick="home()">← Меню</button><b>Статистика</b><span></span></div>`;
+if(!n)return $('#app').innerHTML=h+'<div class="card m">Пока нет данных — решите несколько заданий.</div>';
+h+=`<div class="card" style="text-align:center"><div class="big2" style="color:${col(p)}">${p}%</div><div class="m">верных ответов · всего решено ${n} (✅ ${ok} / ❌ ${bad}) · с подсказкой: ${hh}</div></div><h2>По темам</h2><div class="card">`;
+const rows=T.map(t=>({t,a:acc(t.id),d:ST.t[t.id]||{ok:0,bad:0,h:0}}));
+rows.forEach(r=>{h+=`<div class="rb"><span>${r.t.i} ${r.t.n}</span><span class="t"><i style="width:${r.a||0}%;background:${col(r.a)}"></i></span><span style="width:84px;text-align:right">${r.a===null?'—':r.a+'% ('+r.d.ok+'/'+(r.d.ok+r.d.bad)+')'}</span></div>`});
+h+='</div>';const weak=rows.filter(r=>r.a!==null&&r.d.ok+r.d.bad>=3&&r.a<60).sort((a,b)=>a.a-b.a);
+h+='<h2>На что обратить внимание</h2><div class="card">'+(weak.length?weak.map(r=>`<div class="rb"><span style="width:auto;flex:1">⚠️ ${r.t.n} — ${r.a}%</span><button onclick="start('topic','${r.t.id}')">Тренировать</button></div>`).join(''):'<span class="m">Слабых тем пока нет (нужно хотя бы 3 ответа по теме и точность ниже 60%).</span>')+'</div>';
+const best=rows.filter(r=>r.a!==null&&r.d.ok+r.d.bad>=3&&r.a>=80);if(best.length)h+=`<p class="m">💪 Сильные темы: ${best.map(r=>r.t.n).join(', ')}</p>`;
+if(ST.h.length){const l=ST.h.slice(-12);h+='<h2>Динамика по занятиям</h2><div class="card"><div class="ch">'+l.map(s=>{const q=Math.round(s.ok/s.n*100);return`<div title="${q}%" style="height:${Math.max(q,3)}%;background:${col(q)}"></div>`}).join('')+`</div><div class="m" style="font-size:.8rem">Последние ${l.length} занятий (слева — старые). Последнее: ${l[l.length-1].ok}/${l[l.length-1].n}, ${new Date(l[l.length-1].ts).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</div></div>`}
+h+='<p style="text-align:center"><button class="g" onclick="if(confirm(\'Сбросить всю статистику?\')){ST={t:{},h:[]};save();stats()}">Сбросить статистику</button></p>';
+$('#app').innerHTML=h}
+home();
+</script></body></html>
